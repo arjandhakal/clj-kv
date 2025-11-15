@@ -5,4 +5,7 @@
         ring/ring-core {:mvn/version "1.15.3"}
         ring/ring-defaults {:mvn/version "0.7.0"}
         ring/ring-json {:mvn/version "0.5.1"}}
- :aliases {:dev {:extra-paths ["dev/src" "dev/resources"]}}}
+ :aliases {:dev {:extra-paths ["dev/src" "dev/resources"]}
+           :test {:extra-paths ["test" "dev/src" "dev/resources"]
+                  :main-opts ["-m" "kaocha.runner"]
+                  :extra-deps {lambdaisland/kaocha {:mvn/version "1.91.1392"}}}}}

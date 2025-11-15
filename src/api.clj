@@ -16,10 +16,10 @@
                                  :body value}
                                 {:status 404}))))
 
-(defn start-server []
+(defn start-server [opts]
   (when-not @server
-    (reset! server (jetty/run-jetty #'handler {:port 3003
-                                        :join? false}))))
+    (reset! server (jetty/run-jetty #'handler {:port (or (:port opts) 3003)
+                                               :join? false}))))
 
 (defn stop-server []
   (when @server

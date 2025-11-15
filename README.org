@@ -1,2 +1,6 @@
 * Introduction
 A simple key value store using clojure
+* Running test
+Uses kaocha 
+
+`clj -M:test`
