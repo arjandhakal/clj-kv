@@ -1,0 +1,24 @@
+meta {
+  name: Add Key/Value
+  type: http
+  seq: 1
+}
+
+put {
+  url: {{url}}/{{key}}
+  body: text
+  auth: inherit
+}
+
+body:json {
+  "super"
+}
+
+body:text {
+  bruno
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
