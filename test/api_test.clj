@@ -1,7 +1,8 @@
 (ns api-test
   (:require [clojure.test :refer :all]
             [api :as SUT]
-            [clj-http.client :as client]))
+            [clj-http.client :as client]
+            [utils.kv-data-gen :as u-kdg]))
 
 (def port 3009)
 (def url (str "http://localhost:" port))
@@ -19,10 +20,13 @@
     (SUT/stop-server)
     (reset! SUT/kv-memory nil)))
 
+(deftest multiple-test-kv
+  (is (= {} (u-kdg/kv-test-data))))
+
 
 (comment
   SUT/kv-memory
   SUT/server
   (client/get (str url "/zd"))
-   ;;
+  ;;
   )
