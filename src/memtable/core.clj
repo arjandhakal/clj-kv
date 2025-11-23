@@ -16,3 +16,4 @@
 
 (defn clear-memtable []
   (reset! memtable {}))
+

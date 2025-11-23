@@ -30,4 +30,5 @@ cicd/credentials/*.json
 
 /keywords/*.edn
 /keywords/*.json
-
+/dev/clj-kv/
+/data
