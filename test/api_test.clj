@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [api :as SUT]
             [clj-http.client :as client]
+            [memtable.core :as mc]
             [utils.kv-data-gen :as u-kdg]))
 
 (def port 3009)
@@ -18,15 +19,14 @@
 
     ;; Stopping Server, Cleaning Atom
     (SUT/stop-server)
-    (reset! SUT/kv-memory nil)))
+    (mc/clear-memtable)))
 
 (deftest multiple-test-kv
   (is (= {} (u-kdg/kv-test-data))))
 
 
 (comment
-  SUT/kv-memory
-  SUT/server
+
   (client/get (str url "/zd"))
-  ;;
-  )
+  
+  :-)

@@ -1,17 +1,18 @@
 (ns dev
-  (:require [api :as a]))
+  (:require [api :as a]
+            [memtable.core :as mc]))
 
 
 
 
-a/kv-memory
 
 (comment
   ;; Starting the server
-  (a/start-server)
+  (a/start-server {})
 
   ;; Stopping the server
   (a/stop-server)
-  
-  a/server
-  )
+
+  mc/mem-table
+
+  :-)

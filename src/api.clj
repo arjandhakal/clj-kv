@@ -1,7 +1,7 @@
 (ns api
-  (:require [ring.adapter.jetty :as jetty]))
+  (:require [ring.adapter.jetty :as jetty]
+            [memtable.core :as mc ]))
 
-(defonce kv-memory (atom {}))
 (def server (atom nil))
 
 (defn handler [req]
@@ -9,9 +9,9 @@
         key        (subs (:uri req) 1)
         body-stream (:body req)]
     (cond (= req-method :put) (do
-                                (swap! kv-memory assoc key (slurp body-stream))
+                                (mc/store {:key key :value (slurp body-stream)})
                                 {:status 200})
-          (= req-method :get) (if-let [value (get @kv-memory key)]
+          (= req-method :get) (if-let [value (mc/fetch key)]
                                 {:status 200
                                  :body value}
                                 {:status 404}))))
