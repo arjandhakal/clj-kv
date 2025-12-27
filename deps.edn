@@ -4,7 +4,8 @@
         ring/ring-jetty-adapter {:mvn/version "1.9.1"}
         ring/ring-core {:mvn/version "1.15.3"}
         ring/ring-defaults {:mvn/version "0.7.0"}
-        ring/ring-json {:mvn/version "0.5.1"}}
+        ring/ring-json {:mvn/version "0.5.1"}
+        org.clojure/core.async {:mvn/version "1.8.741"}}
  :aliases {:dev {:extra-paths ["dev/src" "dev/resources"]}
            :test {:extra-paths ["test" "dev/src" "dev/resources" "test/resources"]
                   :main-opts ["-m" "kaocha.runner"]
