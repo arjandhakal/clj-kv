@@ -1,6 +1,8 @@
 (ns api
   (:require [ring.adapter.jetty :as jetty]
-            [memtable.core :as mc ]))
+            [memtable.core :as mc ]
+            [kv.boundaries.port.kv-store :as kv-store.port]
+            [kv.boundaries.adapter.mem-kv-store :as mem-kv-adapter]))
 
 (def server (atom nil))
 
@@ -9,9 +11,9 @@
         key        (subs (:uri req) 1)
         body-stream (:body req)]
     (cond (= req-method :put) (do
-                                (mc/store {:key key :value (slurp body-stream)})
+                                (kv-store.port/store! mem-kv-adapter/mem-kv-store key (slurp body-stream))
                                 {:status 200})
-          (= req-method :get) (if-let [value (mc/fetch key)]
+          (= req-method :get) (if-let [value (kv-store.port/fetch mem-kv-adapter/mem-kv-store key)]
                                 {:status 200
                                  :body value}
                                 {:status 404}))))
