@@ -1,0 +1,9 @@
+{:kv.core/secrets #profile {:dev #include "config.local.edn"
+                             :staging "/tmp/clj_kv"}
+ :kv.boundaries.adapter.mem-kv-store/store {:manifest-path #ref [:kv.core/secrets :manifest-path]
+                                            :threshold #profile {:dev 3
+                                                                 :staging 10
+                                                                 :prod 2000
+                                                                 :test 2000}}
+ :kv.api/server {:port 3003
+                 :mem-kv-store #ig/ref :kv.boundaries.adapter.mem-kv-store/store}}

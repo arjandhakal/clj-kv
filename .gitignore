@@ -32,3 +32,4 @@ cicd/credentials/*.json
 /keywords/*.json
 /dev/clj-kv/
 /data
+/resources/config.local.edn

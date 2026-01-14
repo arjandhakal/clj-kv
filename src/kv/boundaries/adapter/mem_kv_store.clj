@@ -1,9 +1,8 @@
 (ns kv.boundaries.adapter.mem-kv-store
   (:require [kv.boundaries.port.kv-store :as port]
             [clojure.string :as str]
-            [utils.file :as uf]))
-
-(defonce memtable (atom {}))
+            [utils.file :as uf]
+            [integrant.core :as ig]))
 
 (defn- next-manifest-file [manifest-path]
   (let [manifest-file (str manifest-path  "/manifest.json")
@@ -37,11 +36,21 @@
   (keys-size [_]
     (count @memtable))
   (flush! [_]
-    (flush-memtable @memtable manifest-path)))
+    (flush-memtable @memtable manifest-path))
+  (reset! [_]
+    (reset! memtable {}))
+  (delete! [_ k]
+    (swap! memtable dissoc k))
+  (all-keys [_]
+    (keys @memtable))) 
+
+(defmethod ig/init-key ::store [_ {:keys [threshold manifest-path]}]
+  (let [memtable (atom {})]
+    (->MemKVStore memtable threshold manifest-path)))
 
 
-(defonce mem-kv-store (->MemKVStore memtable 3 "/tmp/clj_kv/ss_tables"))
-
-
-
-@memtable
+(defmethod ig/halt-key! ::store [_ store]
+  (let [flush-result (port/flush! store)]
+    (when (future? flush-result)
+      @flush-result
+      (println "Flush complete.."))))

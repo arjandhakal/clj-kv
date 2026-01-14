@@ -1,5 +1,5 @@
 (ns dev
-  (:require [api]
+  (:require [kv.api :as api]
             [memtable.core :as mc]
             [clojure.core.async :as a
              :refer [>!  <! >!! <!!  go chan buffer close! thread alts! alts!! timeout]]))
@@ -27,6 +27,9 @@
 
   (add-libs '{org.clojure/data.json {:mvn/version "2.5.1"}})
   (add-libs '{org.clojure/core.async {:mvn/version "1.8.741"}})
+
+  (add-libs '{integrant/integrant {:mvn/version "1.0.1"}})
+  (add-libs '{juxt/aero {:mvn/version "1.1.6"}})
 
   (require '[clojure.data.json :as json])
 
