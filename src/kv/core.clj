@@ -16,6 +16,3 @@
     (ig/load-namespaces config)
     (ig/init config)))
 
-(comment
-  (def system (-main))
-  (ig/halt! system))

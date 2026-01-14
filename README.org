@@ -1,6 +1,25 @@
-* Introduction
-A simple key value store using clojure
-* Running test
-Uses kaocha 
+* Simple KV Store
+A simple In-Memory Key-Value store written in Clojure.
 
-`clj -M:test`
+* Development
+** REPL Workflow
+Start the REPL:
+#+BEGIN_SRC bash
+clj -M:dev
+#+END_SRC
+
+Inside the REPL, the after evaluating `dev` namespace 
+#+BEGIN_SRC clojure
+(reset) ;; Reload code and restart system
+(test)  ;; Run all tests
+#+END_SRC
+
+** Testing
+Run tests from the terminal:
+#+BEGIN_SRC bash
+clojure -M:test
+#+END_SRC
+
+* Architecture
+- **Protocol/Record**: `KVStore` protocol with `MemKVStore` implementation.
+- **Integrant**: For system lifecycle management.

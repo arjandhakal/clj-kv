@@ -1,23 +1,56 @@
 (ns dev
-  (:require [kv.api :as api]
-            [memtable.core :as mc]
-            [clojure.core.async :as a
-             :refer [>!  <! >!! <!!  go chan buffer close! thread alts! alts!! timeout]]))
+  (:require [kv.core :as core]
+            [integrant.core :as ig]
+            [integrant.repl :as ig-repl]
+            [integrant.repl.state :as ig-state]
+            [clojure.tools.namespace.repl :as repl]
+            [clojure.walk :as walk]
+            [kaocha.repl :as main]
+            [portal.api :as p]))
 
 
 
+;; Portal Setup
+(defonce portal (p/open))
+
+(add-tap #'p/submit)
+
+(defn inspect [data] (tap> data))
+
+;; Integrant Setup
+(ig-repl/set-prep! (fn []
+                     (let [config (core/load-config :dev)]
+                       (ig/load-namespaces config)
+                       config)))
+
+;; Development Helpers
+
+(defn start! [] (ig-repl/go))
+(defn stop! [] (ig-repl/halt))
+(defn restart! [] (ig-repl/reset))
+(defn system [] ig-state/system)
+(defn refresh [] (repl/refresh))
 
 
+;; Code reloading with system restart
+(defn refresh-and-restart! []
+  (when-let [result (repl/refresh :after 'dev/start!)]
+    (println "Refreshed:" result)))
+
+(def reset refresh-and-restart!)
+
+(defn test []
+  (ig-repl/reset)
+  (main/run :unit))
+ 
 (comment
-  ;; Starting the server
-  (api/start-server {})
-
-  ;; Stopping the server
-  (api/stop-server)
-
-  @mc/memtable
-
-  :-)
+  (start!)                   ;; Start system
+  (inspect (system))         ;; View system in portal
+  (inspect @(get-in (system) [:kv.boundaries.adapter.mem-kv-store/store :memtable]))
+  (refresh-and-restart!)     ;; Reload code + restart system
+  (refresh)             ;; Just reload code
+  (stop!)                   ;; Stop system
+)
 
 
 (comment
@@ -28,13 +61,11 @@
   (add-libs '{org.clojure/data.json {:mvn/version "2.5.1"}})
   (add-libs '{org.clojure/core.async {:mvn/version "1.8.741"}})
 
-  (add-libs '{integrant/integrant {:mvn/version "1.0.1"}})
-  (add-libs '{juxt/aero {:mvn/version "1.1.6"}})
+  (add-libs '{djblue/portal {:mvn/version "0.62.2"}})
+  (add-libs '{integrant/repl {:mvn/version "0.5.0"}})
 
   (require '[clojure.data.json :as json])
 
-  (json/write-str [{:a 1 :b 2}])
-  (json/write-str @mc/memtable)
 
   (->
    (json/write-str {:a 1 :b 2 :c {:d "xxx"}})
@@ -43,58 +74,4 @@
   :-)
 
 
-
-
-(comment
-  (defn hot-dog-machine
-    []
-    (let [in (chan)
-          out (chan)]
-      (go (<! in)
-          (>! out "hot dog"))
-      [in out]))
-
-  (let [[in out] (hot-dog-machine)]
-    (>!! in "chi-ching")
-    (<!! out))
-
-  (defn hot-dog-machine-v2
-    [hot-dog-count]
-    (let [in (chan)
-          out (chan)]
-      (go (loop [hc hot-dog-count]
-            (if (> hc 0)
-              (let [input (<! in)]
-                (if (= 3 input)
-                  (do (>! out "hot dog")
-                      (recur (dec hc)))
-                  (do (>! out "wilted lettuce")
-                      (recur hc))))
-              (do (close! in)
-                  (close! out)))))
-      [in out]))
-
-  (let [[in out] (hot-dog-machine-v2 2)]
-    (>!! in "pocket lint")
-    (println (<!! out))
-
-    (>!! in 3)
-    (println (<!! out))
-
-    (>!! in 3)
-    (println (<!! out))
-
-    (>!! in 3)
-    (println (<!! out)))
-
-
-  (let [c1 (chan)
-        c2 (chan)
-        c3 (chan)]
-    (go (>! c2 (clojure.string/upper-case (<! c1))))
-    (go (>! c3 (clojure.string/reverse (<! c2))))
-    (go (println (<! c3)))
-    (>!! c1 "redrum"))
-
-  :-)
 
